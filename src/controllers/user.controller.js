@@ -47,11 +47,27 @@ const registerUser = asyncHandler(async (req, res) => {
     // 5.
     const avatar = await uploadOnCloudinary(avatarLocalPath)
     const coverImage = await uploadOnCloudinary(coverImageLocalPath)
-    //we could use await here because we made use of async at the start
+    // we could use await here because we made use of async at the start
+    // The asynchronous function returns a Promise because the upload process takes time, await ensures we wait for the Promise to be resolved before moving to the next line.
     if(!avatar){
         throw new ApiError(400, "Avatar file is required")
     } // This happens after uploading the file to Cloudinary, ensures file was successfully uploaded to the cloud. 
 
+    // 6.
+    const user = await User.create({
+        fullName,
+        avatar : avatar.url,
+        coverImage : coverImage?.url || "", // did this bec we didn't check earlier if coverImage exists
+        email,
+        password,
+        userName: userName.toLowerCase()
+    })
+
+    // 7.
+    const createdUser = await User.findById(user._id).select("-password -refreshToken")
+    if(!createdUser){
+        throw new ApiError(500, "Something went wrong while registering the user")
+    }
 
 });
 
