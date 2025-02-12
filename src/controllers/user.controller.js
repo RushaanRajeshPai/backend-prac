@@ -31,6 +31,21 @@ const registerUser = asyncHandler(async (req, res) => {
     if(existedUser){
         throw new ApiError(409,"User with same username or email exists")
     }
+
+    // 4.
+    const avatarLocalPath = req.files?.avatar[0]?.path;
+    const coverImageLocalPath = req.files?.coverImage[0]?.path;
+    // req.files → This refers to files uploaded via a form submission (multer)
+    // ?. → Ensures that if req.files or req.files.avatar is null, then no error displayed
+    // avatar[0] → Assumes that avatar is an array from which multiple files are accessed
+    // .path → Refers to the local file path where the uploaded file is stored
+
+    if(!avatarLocalPath){
+        throw new ApiError(400, "Avatar file is required")
+    }
+
+
+
 });
 
 export { registerUser };
