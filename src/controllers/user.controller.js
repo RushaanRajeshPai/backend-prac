@@ -1,6 +1,7 @@
 import { asyncHandler } from "../utils/asyncHandler";
 import {ApiError} from "../utils/ApiError.js"
 import {User} from '../models/user.model.js'
+import { uploadOnCloudinary } from "../utils/cloudinary.js";
 
 const registerUser = asyncHandler(async (req, res) => {
     // 1. Get user details from frontend (check user.model.js)
@@ -39,11 +40,17 @@ const registerUser = asyncHandler(async (req, res) => {
     // ?. → Ensures that if req.files or req.files.avatar is null, then no error displayed
     // avatar[0] → Assumes that avatar is an array from which multiple files are accessed
     // .path → Refers to the local file path where the uploaded file is stored
-
     if(!avatarLocalPath){
         throw new ApiError(400, "Avatar file is required")
-    }
+    } // This happens before uploading the file to Cloudinary, ensures that file was uploaded by user.
 
+    // 5.
+    const avatar = await uploadOnCloudinary(avatarLocalPath)
+    const coverImage = await uploadOnCloudinary(coverImageLocalPath)
+    //we could use await here because we made use of async at the start
+    if(!avatar){
+        throw new ApiError(400, "Avatar file is required")
+    } // This happens after uploading the file to Cloudinary, ensures file was successfully uploaded to the cloud. 
 
 
 });
