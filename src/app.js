@@ -23,6 +23,6 @@ app.get("/", (req, res) => {
 import userRouter from './routes/user.routes.js'
 
 // Register routes
-app.use("/users", userRouter)  
+app.use("/api/v1/users", userRouter)  
 
 export { app };
